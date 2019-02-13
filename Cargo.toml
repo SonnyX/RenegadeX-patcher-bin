@@ -1,0 +1,8 @@
+[package]
+name = "renegade_x_patcher_bin"
+version = "0.1.0"
+authors = ["SonnyX"]
+edition = "2018"
+
+[dependencies]
+lib_renegade_x_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git" }

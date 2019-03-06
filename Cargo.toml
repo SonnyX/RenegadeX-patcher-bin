@@ -1,8 +1,17 @@
 [package]
-name = "renegade_x_patcher_bin"
+name = "lib_renegade_x_launcher"
 version = "0.1.0"
 authors = ["SonnyX"]
 edition = "2018"
 
 [dependencies]
-lib_renegade_x_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git" }
+renegadex_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git" }
+rust-ini = "0.13.0"
+
+[profile.dev]
+opt-level = 3
+debug = true
+
+[profile.test]
+opt-level = 3
+debug = 2

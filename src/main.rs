@@ -1,28 +1,39 @@
-extern crate lib_renegade_x_patcher;
+extern crate renegadex_patcher;
+extern crate ini;
 
-use lib_renegade_x_patcher::Downloader;
+use renegadex_patcher::{Downloader, Update};
+use ini::Ini;
 
 fn main() {
-/*
-  let matches = App::new("RenegadeX downloader/patcher")
-    .author("Author: Randy von der Weide")
-    .arg(Arg::with_name("check")
-      .short("c")
-      .long("check")
-      .help("Checks if game is installed or if an update is available")
-    )
-    .arg(Arg::with_name("update")
-      .short("u")
-      .long("update")
-      .help("Downloads and installs update if available")
-    )
-    .arg(Arg::with_name("RENX_PATH")
-      .help("The location where RenegadeX is installed or should be installed")
-      .required(true)
-      .index(1))
-    .get_matches();
-*/
+  let conf = match Ini::load_from_file("RenegadeX.ini") {
+    Ok(conf) => conf,
+    Err(_e) => {
+      let mut conf = Ini::new();
+      conf.with_section(Some("RenX_Patcher"))
+        .set("GameLocation", "C:/Program Files (x86)/Renegade X/")
+        .set("VersionUrl", "https://static.renegade-x.com/launcher_data/version/release.json");
+      conf.write_to_file("RenegadeX.ini").unwrap();
+      conf
+    }
+  };
+  let section = conf.section(Some("RenX_Patcher".to_owned())).unwrap();
+  let game_location = section.get("GameLocation").unwrap();
+  let version_url = section.get("VersionUrl").unwrap();
   let mut patcher : Downloader = Downloader::new();
-  patcher.RenegadeX_location = Some("C:/Program Files (x86)/Renegade X/".to_string());
-  patcher.update();
+  patcher.set_location(game_location.to_string());
+  patcher.set_version_url(version_url.to_string());
+  patcher.retrieve_mirrors().unwrap();
+  match patcher.update_available().unwrap() {
+    Update::UpToDate => {
+      println!("Game up to date, verifying game integrity!");
+      patcher.poll_progress();
+      patcher.download().unwrap();
+    },
+    Update::Resume | Update::Delta | Update::Full => {
+      println!("Update available!");
+      patcher.poll_progress();
+      patcher.download().unwrap();
+    }
+  }
+  assert!(true);
 }

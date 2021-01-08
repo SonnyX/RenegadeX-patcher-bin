@@ -1,10 +1,17 @@
 extern crate renegadex_patcher;
 extern crate ini;
 
+use flexi_logger::Logger;
 use renegadex_patcher::{Downloader, Update};
 use ini::Ini;
 
 fn main() {
+  Logger::with_env_or_str("info")
+    .format(flexi_logger::opt_format)
+    .print_message()
+    .start()
+    .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
+
   let conf = match Ini::load_from_file("RenegadeX.ini") {
     Ok(conf) => conf,
     Err(_e) => {
@@ -35,7 +42,7 @@ fn main() {
       patcher.download().unwrap();
     },
     _ => {
-      
+
     }
   }
   assert!(true);

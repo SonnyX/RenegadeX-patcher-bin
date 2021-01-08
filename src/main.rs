@@ -30,6 +30,7 @@ fn main() {
   patcher.set_location(game_location.to_string());
   patcher.set_version_url(version_url.to_string());
   patcher.retrieve_mirrors().unwrap();
+  patcher.rank_mirrors().unwrap();
   match patcher.update_available().unwrap() {
     Update::UpToDate => {
       println!("Game up to date, verifying game integrity!");

@@ -33,6 +33,9 @@ fn main() {
       println!("Update available!");
       patcher.poll_progress();
       patcher.download().unwrap();
+    },
+    _ => {
+      
     }
   }
   assert!(true);

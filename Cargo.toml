@@ -5,7 +5,7 @@ authors = ["SonnyX"]
 edition = "2018"
 
 [dependencies]
-renegadex_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git" }
+renegadex_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git", rev = "1b82927" }
 rust-ini = "0.16.0"
 
 [profile.dev]

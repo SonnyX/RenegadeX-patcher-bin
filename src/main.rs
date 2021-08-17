@@ -1,13 +1,17 @@
 extern crate renegadex_patcher;
 extern crate ini;
 
-use flexi_logger::Logger;
+use std::error::Error;
+use flexi_logger::{Age, Cleanup, Criterion, Duplicate, FileSpec, Logger, Naming};
 use renegadex_patcher::{Downloader, Update};
 use ini::Ini;
 
-fn main() {
-  Logger::with_env_or_str("info")
+fn main() -> Result<(), std::boxed::Box<dyn Error>> {
+  Logger::try_with_env_or_str("info")?
     .format(flexi_logger::opt_format)
+    .log_to_file(FileSpec::default().directory("logs"))
+    .duplicate_to_stderr(Duplicate::Warn)
+    .rotate(Criterion::Age(Age::Day), Naming::Numbers, Cleanup::KeepLogFiles(5))
     .print_message()
     .start()
     .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
@@ -17,8 +21,8 @@ fn main() {
     Err(_e) => {
       let mut conf = Ini::new();
       conf.with_section(Some("RenX_Patcher"))
-        .set("GameLocation", "C:/Program Files (x86)/Renegade X/")
-        .set("VersionUrl", "https://static.renegade-x.com/launcher_data/version/release.json");
+        .set("GameLocation", "../")
+        .set("VersionUrl", "https://static.ren-x.com/launcher_data/version/release.json");
       conf.write_to_file("RenegadeX.ini").unwrap();
       conf
     }
@@ -30,14 +34,14 @@ fn main() {
   patcher.set_location(game_location.to_string());
   patcher.set_version_url(version_url.to_string());
   patcher.retrieve_mirrors().unwrap();
-  patcher.rank_mirrors().unwrap();
+  patcher.rank_mirrors().expect(concat!(file!(),":",line!()));
   match patcher.update_available().unwrap() {
     Update::UpToDate => {
-      println!("Game up to date, verifying game integrity!");
-      patcher.poll_progress();
-      patcher.download().unwrap();
+      println!("Game up to date!");
+      //patcher.poll_progress();
+      //patcher.download().unwrap();
     },
-    Update::Resume | Update::Delta | Update::Full => {
+    Update::Resume | Update::Delta | Update::Full | Update::Unknown => {
       println!("Update available!");
       patcher.poll_progress();
       patcher.download().unwrap();
@@ -46,5 +50,5 @@ fn main() {
 
     }
   }
-  assert!(true);
+  Ok(())
 }

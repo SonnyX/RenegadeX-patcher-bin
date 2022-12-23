@@ -2,12 +2,17 @@
 name = "lib_renegade_x_launcher"
 version = "0.1.0"
 authors = ["SonnyX"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-renegadex_patcher = { git = "https://github.com/SonnyX/RenegadeX-patcher-lib.git", rev = "1b82927" }
+renegadex_patcher = { path = "../RenegadeX-patcher-lib" }
 rust-ini = "0.18.0"
-flexi_logger = "0.23"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
+console-subscriber = "0.1.8"
+json = "0.12"
+download-async = "0.10"
+tokio = { version = "1.23.0", features = ["full", "tracing"] }
 
 [profile.dev]
 opt-level = 3
